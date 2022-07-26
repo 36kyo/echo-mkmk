@@ -85,7 +85,7 @@ $ python echo-mkmk.py "大阪万博\n2025" -e -g c
 
 ```
 
-### not escape
+( not escape )
 
 ```sh
 $ python echo-mkmk.py "大阪万博\n2025"
