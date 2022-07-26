@@ -6,7 +6,6 @@
     - [align message (left / right)](#align-message-left--right)
     - [gaze (left / center / right)](#gaze-left--center--right)
     - [escape line feed code ```\n```](#escape-line-feed-code-n)
-    - [not escape](#not-escape)
     - [show license](#show-license)
     - [no last line feed](#no-last-line-feed)
   - [ミャクミャク's license](#ミャクミャクs-license)
