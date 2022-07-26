@@ -54,30 +54,35 @@ def mkmk_unit(look_dir: str, look_fb: str) -> str:
     return eye_unit
 
 
-def mkmk(in_txt: str, look: str, look_dir_fb: str, message_align: str):
+def mkmk(in_txt: str, look: str, look_dir_fb: str, message_align: str, is_escape: bool, is_show_license: bool, is_no_ln: bool):
     out_header = ""
     out_footer = ""
-    out_payload = in_txt
+    out_message = in_txt
 
     message_align_txt = " "
     # message_align_txt = "_"  # debug
+    license_txt = "©Copyright Japan Association for the 2025 World Exposition, All rights reserved."
 
     mkmk_unit_len = text_width("( " + eye_ball + " )")
     # print(mkmk_unit_len) # debug
 
-    out_payloads = out_payload.splitlines()
-    payload_max_width = 0
-    for s in out_payloads:
-        payload_max_width = max(payload_max_width, text_width(s))
-    # print(payload_max_width) # debug
+    if is_escape:
+        out_messages = out_message.replace("\\n", '\n').splitlines()
+    else:
+        out_messages = out_message.splitlines()
 
-    out_header_mkmks = int(payload_max_width / mkmk_unit_len)
-    if payload_max_width % mkmk_unit_len != 0:
+    message_max_width = 0
+    for s in out_messages:
+        message_max_width = max(message_max_width, text_width(s))
+    # print(message_max_width) # debug
+
+    out_header_mkmks = int(message_max_width / mkmk_unit_len)
+    if message_max_width % mkmk_unit_len != 0:
         out_header_mkmks += 1
     out_header_len = out_header_mkmks * mkmk_unit_len
 
-    out_payloads_formatted = []
-    for i in out_payloads:
+    out_messages_formatted = []
+    for i in out_messages:
         buf_txt = i
         txt_len_diff = out_header_len - text_width(i)
         if txt_len_diff > 0:
@@ -89,7 +94,7 @@ def mkmk(in_txt: str, look: str, look_dir_fb: str, message_align: str):
             else:
                 txt_len_diff_half = int(txt_len_diff / 2)
                 buf_txt = message_align_txt * txt_len_diff_half + buf_txt + message_align_txt * (txt_len_diff - txt_len_diff_half)
-        out_payloads_formatted.append(buf_txt)
+        out_messages_formatted.append(buf_txt)
 
     out_header = ""
     out_footer = ""
@@ -98,24 +103,32 @@ def mkmk(in_txt: str, look: str, look_dir_fb: str, message_align: str):
         out_footer += mkmk_unit(look, look_dir_fb)
 
     out_txt = out_header + '\n'
-    for i in out_payloads_formatted:
+    for i in out_messages_formatted:
         out_txt += mkmk_unit(look, look_dir_fb) + i + mkmk_unit(look, look_dir_fb) + '\n'
-    out_txt += out_footer  # + '\n'
-    print(out_txt)
+    out_txt += out_footer
+
+    if is_show_license:
+        out_txt += '\n' + license_txt
+
+    if is_no_ln:
+        print(out_txt, end='')
+    else:
+        print(out_txt)
 
 
 def main():
     psr = argparse.ArgumentParser()
     psr.add_argument('in_txt', default="", help="print txt")
-    psr.add_argument('-a', '--all', default='', help="look front/back all")
-    psr.add_argument('--align', default='c', help="align message 'l','c','r'")
-    psr.add_argument('-l', '--look', default=' ', help="look 'l','c','r'")
+    psr.add_argument('-a', '--all', default='', help="look 'f'(front)/'b'(back) all")
+    psr.add_argument('--align', default='c', help="align message 'l'(left),'c'(center),'r'(right)")
+    psr.add_argument('-e', '--escape_ln', action='store_true', help="escape \\n")
+    psr.add_argument('-g', '--gaze', default='', help="gaze 'l'(left),'c'(center),'r'(right)")
+    psr.add_argument('-l', '--license', action='store_true', help="print license of ミャクミャク")
+    psr.add_argument('-n', '--no_ln', action='store_true', help="not output last \\n")
     args = psr.parse_args()
 
-    in_txt = args.in_txt
-    look_dir_fb = args.all
-    look_dir = args.look
-    mkmk(in_txt, look_dir, look_dir_fb, args.align)
+    mkmk(in_txt=args.in_txt, look=args.gaze, look_dir_fb=args.all, message_align=args.align, is_escape=args.escape_ln, is_show_license=args.license, is_no_ln=args.no_ln)
+
 
 if __name__ == '__main__':
     main()
